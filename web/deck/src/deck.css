@@ -3479,12 +3479,12 @@
 .pd-poly--wide .pd-poly__t { display: none; }
 .pd-poly--summary { align-items: center; justify-content: center; text-align: center; padding: 8px 12px; gap: 4px; }
 .pd-poly--summary .pd-poly__lb { font-size: 11px; }
-.pd-poly--summary .pd-poly__sum { justify-content: center; flex-wrap: nowrap; gap: 2px 8px; font-size: clamp(16px, 3.2vh, 24px); line-height: 1; }
-.pd-poly--summary .pd-poly__sum b { font-size: clamp(22px, 5vh, 40px); line-height: 0.9; }
-.pd-poly--summary .pd-poly__open { font-size: clamp(11px, 1.8vh, 14px); color: var(--pd-muted); }
-.pd-poly--summary .pd-poly__sum b.pd-poly__val { font-size: clamp(18px, 4.2vh, 32px); }
-.pd-poly--summary .pd-poly__sum i { font-size: clamp(14px, 2.6vh, 20px); }
-.pd-poly--summary .pd-poly__pnl { font-size: clamp(18px, 4.2vh, 32px); }
+.pd-poly--summary .pd-poly__sum { justify-content: center; flex-wrap: nowrap; gap: 2px 8px; font-size: clamp(24px, 4.8vh, 36px); line-height: 1; }
+.pd-poly--summary .pd-poly__sum b { font-size: clamp(33px, 7.5vh, 60px); line-height: 0.9; }
+.pd-poly--summary .pd-poly__open { font-size: clamp(17px, 2.7vh, 21px); color: var(--pd-muted); }
+.pd-poly--summary .pd-poly__sum b.pd-poly__val { font-size: clamp(27px, 6.3vh, 48px); }
+.pd-poly--summary .pd-poly__sum i { font-size: clamp(21px, 3.9vh, 30px); }
+.pd-poly--summary .pd-poly__pnl { font-size: clamp(27px, 6.3vh, 48px); }
 .pd-poly--full { padding: 18px 22px; gap: 6px; }
 .pd-poly--full .pd-poly__lb { font-size: 13px; }
 .pd-poly--full .pd-poly__sum { font-size: 17px; gap: 9px; }
