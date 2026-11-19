@@ -148,7 +148,7 @@ const winColor = (color: string, k: number, p: number) => STATE_COLOR[stateOf(p)
 
 /** bars: one horizontal bar per window (usage-meter limit bars). */
 function BarsChart(c: ChartIn) {
-  const rowH = c.showReset ? 34 : 30
+  const rowH = c.showReset ? 40 : 30
   const n = Math.max(1, Math.min(c.wins.length, Math.floor(c.h / rowH)))
   const rows = c.wins.slice(0, n)
   return (
@@ -615,6 +615,31 @@ export function QuotaWidget(props: AiWidgetProps) {
         <div class="pd-qbody pd-qbody--fill" ref={bodyRef}>
           <TallChart {...ci} />
         </div>
+      </div>
+    )
+  }
+
+  // short 2x1 tiles with several windows: stack compact bars instead of showing only the hero window
+  if (chart === 'bars' && wins.length > 1 && th < 100 && tw >= 120 && !needsLogin) {
+    return (
+      <div class="pd-quota pd-quota--mini" style={{ padding: '7px 10px', color: tc }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px', minHeight: '18px' }}>
+          {mark(18)}
+          <b style={{ color: tc || undefined, fontSize: '11px', lineHeight: '18px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</b>
+        </div>
+        {wins.slice(0, 3).map((w) => {
+          const p = Math.max(0, Math.min(100, w.usedPercent))
+          const c = stateColor(p, color)
+          return (
+            <div key={w.id} style={{ display: 'flex', alignItems: 'center', gap: '6px', height: '14px', fontSize: '10px', lineHeight: '14px' }}>
+              <span style={{ width: '38px', flex: '0 0 38px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', opacity: 0.75 }}>{w.label}</span>
+              <span style={{ flex: '1 1 auto', height: '5px', borderRadius: '3px', background: 'rgba(255,255,255,0.12)', overflow: 'hidden' }}>
+                <span style={{ display: 'block', height: '100%', width: p + '%', background: c }} />
+              </span>
+              <span style={{ width: '30px', flex: '0 0 30px', textAlign: 'right', color: c }}>{Math.round(p)}%</span>
+            </div>
+          )
+        })}
       </div>
     )
   }
