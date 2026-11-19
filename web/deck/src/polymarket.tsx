@@ -2,7 +2,7 @@ import { relTime, useTick } from './automation'
 import { t } from './i18n'
 import type { PushedValue, PushOptions } from './types'
 
-type Row = { title: string; outcome: string; price: string; pnl: string }
+type Row = { title: string; outcome: string; price: string; pnl: string; avg?: string; now?: string; shares?: string; traded?: string; towin?: string; value?: string; pct?: string; icon?: string }
 
 /** Compact live view of pushed Polymarket positions. `sub` carries `sum~count~value~pnl|title~outcome~price~pnl|...`. */
 export function PolyLiveTile(props: {
@@ -23,6 +23,13 @@ export function PolyLiveTile(props: {
   const maxRows = items.length ? 50 : props.th >= 150 ? 3 : props.th >= 110 ? 2 : 1
   const rows: Row[] = source.slice(0, maxRows).map((part) => {
     const cells = String(part).split('~')
+    if (cells.length >= 11) {
+      return {
+        title: cells[0] || '', outcome: cells[1] || '', avg: cells[2] || '', now: cells[3] || '',
+        shares: cells[4] || '', traded: cells[5] || '', towin: cells[6] || '', value: cells[7] || '',
+        pnl: cells[8] || '', pct: cells[9] || '', icon: cells[10] || '', price: cells[2] || '',
+      }
+    }
     return { title: cells[0] || '', outcome: cells[1] || '', price: cells[2] || '', pnl: cells[3] || '' }
   })
   const wide = props.tw >= 520 && props.th >= 140
@@ -45,6 +52,26 @@ export function PolyLiveTile(props: {
       <div class="pd-poly__rows">
         {rows.length ? rows.map((row, i) => {
           const negative = Number(row.pnl) < 0
+          if (full) {
+            return (
+              <div class="pd-poly__card" key={i}>
+                <div class="pd-poly__chead">
+                  {row.icon ? <img class="pd-poly__cicon" src={row.icon} alt="" /> : <span class="pd-poly__cicon pd-poly__cicon--blank">◈</span>}
+                  <span class="pd-poly__ctitle">{row.title}</span>
+                </div>
+                <div class="pd-poly__cside">{row.outcome} <b>{row.avg}</b></div>
+                <div class="pd-poly__cshares">{row.shares} shares</div>
+                <div class="pd-poly__cmetrics">
+                  <div><span>Avg</span><b>{row.avg}</b></div>
+                  <div><span>Now</span><b>{row.now}</b></div>
+                  <div><span>Traded</span><b>${row.traded}</b></div>
+                  <div><span>To win</span><b>${row.towin}</b></div>
+                  <div><span>Value</span><b>${row.value}</b></div>
+                </div>
+                <div class={negative ? 'pd-poly__cpnl pd-poly__cpnl--neg' : 'pd-poly__cpnl'}>{row.pnl} {row.pct ? `(${row.pct})` : ''}</div>
+              </div>
+            )
+          }
           return (
             <div class="pd-poly__row" key={i}>
               <span class="pd-poly__title">{row.title}</span>

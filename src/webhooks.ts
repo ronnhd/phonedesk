@@ -150,6 +150,6 @@ export function parsePushBody(raw: string, contentType: string): { value: string
     if ((value as string).trim() !== "" && Number.isFinite(n)) value = n;
   }
   const t = Number(ttl);
-  const cleanItems = Array.isArray(items) ? items.filter((x): x is string => typeof x === "string").slice(0, 50).map((x) => x.slice(0, 200)) : [];
+  const cleanItems = Array.isArray(items) ? items.filter((x): x is string => typeof x === "string").slice(0, 50).map((x) => x.slice(0, 600)) : [];
   return { value: value as string | number, ...(typeof sub === "string" && sub ? { sub } : {}), ...(Number.isFinite(t) && t > 0 ? { ttl: t } : {}), ...(cleanItems.length ? { items: cleanItems } : {}) };
 }

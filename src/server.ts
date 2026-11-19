@@ -972,8 +972,8 @@ export async function startServer(opts: StartOptions = {}) {
         if (denied) return denied;
         const key = decodeURIComponent(pushRoute[1]!);
         if (!PUSH_KEY_RE.test(key)) return json({ error: "invalid key" }, 400);
-        const v = parsePushBody((await req.text()).slice(0, 4096), req.headers.get("content-type") ?? "");
-        if (!v) return json({ error: "send a value as plain text or JSON {value, sub?, ttl?}" }, 400);
+        const v = parsePushBody((await req.text()).slice(0, 16384), req.headers.get("content-type") ?? "");
+        if (!v) return json({ error: "send a value as plain text or JSON {value, sub?, ttl?, items?}" }, 400);
         pushes.set(key, v.value, { sub: v.sub, ttl: v.ttl, items: v.items });
         return json({ ok: true });
       }
