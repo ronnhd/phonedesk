@@ -3470,3 +3470,10 @@
 .pd-poly--compact .pd-poly__sum { font-size: 11px; }
 .pd-poly--compact .pd-poly__sum b { font-size: 14px; }
 .pd-poly--compact .pd-poly__row { font-size: 10px; }
+.pd-poly--wide { padding: 10px 14px; gap: 4px; }
+.pd-poly--wide .pd-poly__lb { font-size: 11px; }
+.pd-poly--wide .pd-poly__sum { font-size: 14px; gap: 6px; }
+.pd-poly--wide .pd-poly__sum b { font-size: 22px; }
+.pd-poly--wide .pd-poly__rows { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); grid-auto-rows: minmax(30px, auto); align-content: space-evenly; gap: 4px 12px; overflow-y: auto; }
+.pd-poly--wide .pd-poly__row { flex-direction: column; align-items: flex-start; gap: 1px; font-size: 12px; line-height: 1.25; }
+.pd-poly--wide .pd-poly__t { display: none; }

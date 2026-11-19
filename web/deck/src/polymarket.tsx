@@ -25,12 +25,13 @@ export function PolyLiveTile(props: {
     const cells = String(part).split('~')
     return { title: cells[0] || '', outcome: cells[1] || '', price: cells[2] || '', pnl: cells[3] || '' }
   })
+  const wide = props.tw >= 520 && props.th >= 140
   const count = summary[0] ?? String(props.val?.value ?? '–')
   const value = summary[1] ?? '–'
   const pnl = summary[2] ?? '–'
   const pnlNegative = Number(pnl) < 0
   return (
-    <div class={'pd-poly' + (props.th < 110 ? ' pd-poly--compact' : '')} style={{ color: props.textColor || undefined }}>
+    <div class={'pd-poly' + (props.th < 110 ? ' pd-poly--compact' : '') + (wide ? ' pd-poly--wide' : '')} style={{ color: props.textColor || undefined }}>
       {props.showLabel ? <span class="pd-poly__lb" style={{ color: props.color || undefined }}>{props.cfg?.label || t('Polymarket')}</span> : null}
       <span class="pd-poly__sum">
         <b>{count}</b> {t('open')}
