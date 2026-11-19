@@ -148,7 +148,7 @@ const winColor = (color: string, k: number, p: number) => STATE_COLOR[stateOf(p)
 
 /** bars: one horizontal bar per window (usage-meter limit bars). */
 function BarsChart(c: ChartIn) {
-  const rowH = c.showReset ? 40 : 30
+  const rowH = c.showReset ? 34 : 30
   const n = Math.max(1, Math.min(c.wins.length, Math.floor(c.h / rowH)))
   const rows = c.wins.slice(0, n)
   return (

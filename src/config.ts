@@ -44,8 +44,8 @@ export const SOUND_ID_RE = /^snd:[a-f0-9]{16}$/;
 export type WidgetKind = "clock" | "cpu" | "memory" | "uptime" | "load" | "network" | "nowplaying" | "quota" | "sessions" | "entity" | "weather" | "value" | "notifications";
 
 /** AI coding tools PhoneDesk reads quotas/sessions from. A "quota" widget shows one provider (item.provider). */
-export type AiProvider = "claude" | "codex" | "antigravity" | "opencode" | "grok";
-export const AI_PROVIDERS: AiProvider[] = ["claude", "codex", "antigravity", "opencode", "grok"];
+export type AiProvider = "omni" | "claude" | "codex" | "antigravity" | "opencode" | "grok";
+export const AI_PROVIDERS: AiProvider[] = ["omni", "claude", "codex", "antigravity", "opencode", "grok"];
 
 /**
  * Tile placement on the page grid: x/y = top-left cell (0-based), w/h = span in cells (default 1x1).

@@ -3,6 +3,7 @@ import { fetchCodexQuota } from "./codex";
 import { fetchAntigravityQuota } from "./antigravity";
 import { fetchOpencodeQuota, detectOpencode, readOpencodeSessions, activeOpencodeSessions } from "./opencode";
 import { grokQuota, readGrokSessions } from "./grok";
+import { readOmniAllowance } from "./omniroute";
 import { withToolState, type ToolStates } from "./states";
 import { listSessions, MAX_SESSIONS } from "./sessions";
 import type { QuotaHistory } from "./history";
@@ -24,6 +25,7 @@ export interface AiSources {
   /** Optional: a source set without them (older tests) shows these providers as "not read". */
   opencode?: () => Promise<ProviderQuota>;
   grok?: () => Promise<ProviderQuota>;
+  omni?: () => Promise<ProviderQuota>;
   sessions: (hints: WaitingHint[]) => Promise<AiSession[]>;
 }
 
@@ -33,6 +35,7 @@ export const realAiSources = (states?: ToolStates): AiSources => ({
   antigravity: () => fetchAntigravityQuota(),
   opencode: async () => fetchOpencodeQuota({ version: await detectOpencode() }),
   grok: () => grokQuota(),
+  omni: async () => readOmniAllowance() ?? { id: "omni", name: "OpenCode Go", windows: [], error: t("OmniRoute data not found"), updatedAt: Date.now() },
   sessions: async (hints) => {
     const [base, oc, active, grok] = await Promise.all([
       listSessions(hints),
@@ -51,8 +54,8 @@ export const realAiSources = (states?: ToolStates): AiSources => ({
   },
 });
 
-const ORDER: AiProviderId[] = ["claude", "codex", "antigravity", "opencode", "grok"];
-const NAMES: Record<AiProviderId, string> = { claude: "Claude", codex: "Codex", antigravity: "Antigravity", opencode: "OpenCode", grok: "Grok" };
+const ORDER: AiProviderId[] = ["omni", "claude", "codex", "antigravity", "opencode", "grok"];
+const NAMES: Record<AiProviderId, string> = { omni: "OpenCode Go", claude: "Claude", codex: "Codex", antigravity: "Antigravity", opencode: "OpenCode", grok: "Grok" };
 
 /**
  * Keeps the latest quotas and sessions; a refresh reports whether the snapshot changed.

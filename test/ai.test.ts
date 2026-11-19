@@ -319,7 +319,7 @@ describe("AiHub", () => {
     expect(await hub.refreshQuotas()).toBe(true);
     expect(claudeCalls).toBe(2);
     const snap = hub.snapshot();
-    expect(snap.providers.map((p) => p.id)).toEqual(["claude", "codex", "antigravity", "opencode", "grok"]);
-    expect(snap.providers[2]!.error).toContain("agy down");
+    expect(snap.providers.map((p) => p.id)).toEqual(["omni", "claude", "codex", "antigravity", "opencode", "grok"]);
+    expect(snap.providers[3]!.error).toContain("agy down");
   });
 });

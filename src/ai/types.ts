@@ -1,7 +1,7 @@
 import { t } from "../i18n";
-export type AiProviderId = "claude" | "codex" | "antigravity" | "opencode" | "grok";
-export type QuotaSource = "claude-code" | "codex-sessions" | "antigravity-local" | "opencode-local" | "grok-cli" | "none";
-export const QUOTA_SOURCE: Record<AiProviderId, QuotaSource> = { claude: "claude-code", codex: "codex-sessions", antigravity: "antigravity-local", opencode: "opencode-local", grok: "grok-cli" };
+export type AiProviderId = "claude" | "codex" | "antigravity" | "opencode" | "grok" | "omni";
+export type QuotaSource = "claude-code" | "codex-sessions" | "antigravity-local" | "opencode-local" | "grok-cli" | "omniroute-local" | "none";
+export const QUOTA_SOURCE: Record<AiProviderId, QuotaSource> = { claude: "claude-code", codex: "codex-sessions", antigravity: "antigravity-local", opencode: "opencode-local", grok: "grok-cli", omni: "omniroute-local" };
 /** The tools whose sessions the sessions widget lists. */
 export type SessionTool = "claude" | "codex" | "opencode" | "grok";
 

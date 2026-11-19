@@ -11,7 +11,7 @@ export const brandOf = (id: string, session?: boolean): Brand | null => {
   if (id === 'claude') return session ? 'claude-code' : 'claude'
   if (id === 'codex') return 'codex'
   if (id === 'antigravity') return 'antigravity'
-  if (id === 'opencode') return 'opencode'
+  if (id === 'opencode' || id === 'omni') return 'opencode'
   if (id === 'grok') return 'grok'
   return null
 }

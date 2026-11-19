@@ -34,6 +34,7 @@ import { ToolStates, type ToolState } from "./ai/states";
 import { detectOpencode, opencodeDataFound, installPlugin, isPluginInstalled, opencodePath, pluginPath, readOpencodeSessions, uninstallPlugin } from "./ai/opencode";
 import { UpdateChecker } from "./update";
 import { grokDataFound, grokQuota, grokHookFile, grokPath, installGrokHook, isGrokHookInstalled, readGrokSessions, uninstallGrokHook } from "./ai/grok";
+import { readOmniValues } from "./ai/omniroute";
 import { PermissionBroker, ensureHookSecret, parseHookInput, secretMatches, PERMISSION_TIMEOUT_MS } from "./permissions";
 import { classifyRisk } from "./risk";
 import { askHookCommand, hookCommand, hookConfigPath, installAskHook, installHook, isAskHookInstalled, isHookInstalled, uninstallAskHook, uninstallHook, type HookTool } from "./hooks-install";
@@ -246,6 +247,17 @@ export async function startServer(opts: StartOptions = {}) {
     broadcast({ type: "notify", notification });
     return notification;
   };
+  const syncOmni = () => {
+    try {
+      const v = readOmniValues();
+      if (!v) return;
+      pushes.set("omni_spend", v.spend.value, { sub: v.spend.sub });
+      pushes.set("omni_volume", v.volume.value, { sub: v.volume.sub });
+      pushes.set("omni_health", v.health.value, { sub: v.health.sub });
+    } catch (e) {
+      console.error("omniroute", e);
+    }
+  };
   const findAction = (pageId: string, itemId: string) => {
     const it = layout.pages.find((p) => p.id === pageId)?.items.find((i) => i.id === itemId);
     return it && it.kind === "button" ? it.action : undefined;
@@ -298,6 +310,9 @@ export async function startServer(opts: StartOptions = {}) {
   const rulesTimer = setInterval(() => rules.tick(), opts.rulesTickMs ?? 30_000);
   (rulesTimer as any).unref?.();
   const unsubHass = hass.onState?.((id, st) => rules.setHass(id, st?.state));
+  syncOmni();
+  const omniTimer = setInterval(syncOmni, 5 * 60_000);
+  omniTimer.unref?.();
 
   const weather = new WeatherService({ fetch: opts.weatherFetch, hass: () => hass });
   async function weatherItems(): Promise<Record<string, unknown>> {
@@ -443,7 +458,7 @@ export async function startServer(opts: StartOptions = {}) {
   const pushAi = () => {
     const ai = hub.snapshot();
     const q: Partial<Record<"claude" | "codex" | "antigravity" | "opencode", number>> = {};
-    for (const pr of ai.providers) { const used = pr.windows.flatMap((w) => (w.usedPercent === null ? [] : [w.usedPercent])); if (used.length && pr.id !== "grok") q[pr.id] = Math.max(...used); }
+    for (const pr of ai.providers) { const used = pr.windows.flatMap((w) => (w.usedPercent === null ? [] : [w.usedPercent])); if (used.length && pr.id !== "grok" && pr.id !== "omni") q[pr.id] = Math.max(...used); }
     rules.setQuota(q);
     rules.setAiInput(ai.sessions.filter((x) => x.state === "waiting" && !x.prompt).map((x) => x.tool));
     broadcast({ type: "ai", ai });
@@ -1248,6 +1263,7 @@ export async function startServer(opts: StartOptions = {}) {
       hassClient?.stop();
       if (aiSessionsTimer) clearInterval(aiSessionsTimer);
       if (aiQuotaTimer) clearInterval(aiQuotaTimer);
+      clearInterval(omniTimer);
       broker.clear();
       questions.clear();
       stopStats();

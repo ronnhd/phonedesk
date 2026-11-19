@@ -222,7 +222,7 @@ export function itemTitle(it: Item): string {
   return `${it.icon ? it.icon + " " : ""}${it.label || t("(unnamed)")}`;
 }
 
-export const PROVIDER_LABEL: Record<string, string> = { claude: "Claude", codex: "Codex", antigravity: "Antigravity", opencode: "OpenCode", grok: "Grok" };
+export const PROVIDER_LABEL: Record<string, string> = { omni: "OpenCode Go", claude: "Claude", codex: "Codex", antigravity: "Antigravity", opencode: "OpenCode", grok: "Grok" };
 
 export const WIDGET_HINT: Record<WidgetKind, string> = {
   clock: "Time and date", nowplaying: "Current track", cpu: "CPU usage (click to see processes)", memory: "Memory in use",

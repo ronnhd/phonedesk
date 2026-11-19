@@ -26,10 +26,10 @@ export interface Sound {
 export type ActionType = Action["type"];
 export const ACTION_TYPES: ActionType[] = ["open", "hotkey", "type", "shell", "media", "volume", "page", "sound", "sound-stop", "hass", "macro"];
 
-export type AiProvider = "claude" | "codex" | "antigravity" | "opencode" | "grok";
-export const AI_PROVIDERS: AiProvider[] = ["claude", "codex", "antigravity", "opencode", "grok"];
+export type AiProvider = "omni" | "claude" | "codex" | "antigravity" | "opencode" | "grok";
+export const AI_PROVIDERS: AiProvider[] = ["omni", "claude", "codex", "antigravity", "opencode", "grok"];
 /** Providers whose quota can be read (Grok has no usage API). */
-export const QUOTA_PROVIDERS: AiProvider[] = ["claude", "codex", "antigravity", "opencode"];
+export const QUOTA_PROVIDERS: AiProvider[] = ["omni", "claude", "codex", "antigravity", "opencode"];
 
 export type ClockStyle = "digital" | "flip" | "analog" | "minimal" | "word" | "world";
 export const CLOCK_STYLES: ClockStyle[] = ["digital", "flip", "analog", "minimal", "word", "world"];

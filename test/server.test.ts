@@ -16,6 +16,7 @@ const hookDir = mkdtempSync(join(tmpdir(), "pd-srv-hooks-"));
 const q = (id: any) => ({ id, name: id, windows: [{ id: "w", label: "5 hours", usedPercent: 10 }], updatedAt: 1 });
 let fakeSessions: any[] = [{ id: "s1", tool: "claude", project: "app", state: "idle", updatedAt: 1 }];
 const fakeAi = {
+  omni: async () => q("omni"),
   claude: async () => q("claude"),
   codex: async () => q("codex"),
   antigravity: async () => ({ ...q("antigravity"), windows: [], error: "agy is not installed" }),
@@ -291,7 +292,7 @@ describe("AI, permissions, integrations, processes", () => {
     const c = connect(token);
     // earlier tests may already have loaded the hub, so the connect snapshot can be complete
     const loaded = await c.next((m) => m.type === "ai" && m.ai.providers[0].windows.length > 0 && m.ai.sessions.length > 0);
-    expect(loaded.ai.providers.map((p: any) => p.id)).toEqual(["claude", "codex", "antigravity", "opencode", "grok"]);
+    expect(loaded.ai.providers.map((p: any) => p.id)).toEqual(["omni", "claude", "codex", "antigravity", "opencode", "grok"]);
     expect(loaded.ai.providers[0].windows[0].usedPercent).toBe(10);
     expect(loaded.ai.sessions[0]).toMatchObject({ tool: "claude", project: "app", state: "idle" });
     fakeSessions = [{ ...fakeSessions[0], state: "working" }];
@@ -528,7 +529,7 @@ describe("icons, apps, layout assets, near-end polling, quota history", () => {
       quotaHistoryFile: join(mkdtempSync(join(tmpdir(), "pd-qhs-")), "qh.json"),
       icons: new Icons({ home: mkdtempSync(join(tmpdir(), "pd-ic-")), dirs: [appsRoot], run, catalog: async () => readFileSync(join(import.meta.dir, "..", "web", "shared", "icon-catalog.json"), "utf8") }),
       deps: { runAction: async () => {}, startStats: () => () => {}, setVolume: async () => {}, readVolume: async () => null, readMedia: async () => { reads++; return track; }, fetchArtwork: async () => undefined, topProcesses: async () => [] },
-      aiSources: { claude: async () => q("claude"), codex: async () => q("codex"), antigravity: async () => q("antigravity"), sessions: async () => [] },
+      aiSources: { omni: async () => q("omni"), claude: async () => q("claude"), codex: async () => q("codex"), antigravity: async () => q("antigravity"), sessions: async () => [] },
       hookPaths: { claude: join(hookDir, "c5.json"), codex: join(hookDir, "x5.json") },
     });
     u = `http://localhost:${srv.port}`;
