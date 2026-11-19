@@ -34,23 +34,25 @@ export function PolyLiveTile(props: {
   })
   const wide = props.tw >= 520 && props.th >= 140
   const full = props.tw >= 900 && props.th >= 400
+  const summaryOnly = !full
   const count = summary[0] ?? String(props.val?.value ?? '–')
   const value = summary[1] ?? '–'
   const pnl = summary[2] ?? '–'
   const pnlNegative = Number(pnl) < 0
   return (
-    <div class={'pd-poly' + (props.th < 110 ? ' pd-poly--compact' : '') + (wide ? ' pd-poly--wide' : '') + (full ? ' pd-poly--full' : '')} style={{ color: props.textColor || undefined }}>
+    <div class={'pd-poly' + (props.th < 110 ? ' pd-poly--compact' : '') + (wide ? ' pd-poly--wide' : '') + (full ? ' pd-poly--full' : '') + (summaryOnly ? ' pd-poly--summary' : '')} style={{ color: props.textColor || undefined }}>
       {props.showLabel ? <span class="pd-poly__lb" style={{ color: props.color || undefined }}>{props.cfg?.label || t('Polymarket')}</span> : null}
       <span class="pd-poly__sum">
-        <b>{count}</b> {t('open')}
-        <i>·</i> ${value}
+        <b>{count}</b><span class="pd-poly__open">{t('open')}</span>
+        <i>·</i><b class="pd-poly__val">${value}</b>
         <i>·</i>
         <em class={pnlNegative ? 'pd-poly__pnl pd-poly__pnl--neg' : 'pd-poly__pnl'}>
           {pnlNegative ? '' : '+'}{pnl}
         </em>
       </span>
-      <div class="pd-poly__rows">
-        {rows.length ? rows.map((row, i) => {
+      {summaryOnly ? null : (
+        <div class="pd-poly__rows">
+          {rows.length ? rows.map((row, i) => {
           const negative = Number(row.pnl) < 0
           if (full) {
             return (
@@ -80,8 +82,9 @@ export function PolyLiveTile(props: {
             </div>
           )
         }) : <span class="pd-poly__empty">{props.val ? t('No open positions') : t('No data yet')}</span>}
-      </div>
-      {props.th >= 110 ? <span class="pd-poly__t">{props.val ? relTime(props.val.at, now) : t('No data yet')}</span> : null}
+        </div>
+      )}
+      {summaryOnly ? null : props.th >= 110 ? <span class="pd-poly__t">{props.val ? relTime(props.val.at, now) : t('No data yet')}</span> : null}
     </div>
   )
 }

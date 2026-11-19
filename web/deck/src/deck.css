@@ -3477,6 +3477,14 @@
 .pd-poly--wide .pd-poly__rows { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); grid-auto-rows: minmax(30px, auto); align-content: space-evenly; gap: 4px 12px; overflow-y: auto; }
 .pd-poly--wide .pd-poly__row { flex-direction: column; align-items: flex-start; gap: 1px; font-size: 12px; line-height: 1.25; }
 .pd-poly--wide .pd-poly__t { display: none; }
+.pd-poly--summary { align-items: center; justify-content: center; text-align: center; padding: 10px 16px; gap: 8px; }
+.pd-poly--summary .pd-poly__lb { font-size: 13px; }
+.pd-poly--summary .pd-poly__sum { justify-content: center; flex-wrap: wrap; gap: 2px 12px; font-size: 32px; line-height: 1.05; }
+.pd-poly--summary .pd-poly__sum b { font-size: 56px; line-height: 0.9; }
+.pd-poly--summary .pd-poly__open { font-size: 16px; color: var(--pd-muted); }
+.pd-poly--summary .pd-poly__sum .pd-poly__val { font-size: 44px; }
+.pd-poly--summary .pd-poly__sum i { font-size: 26px; }
+.pd-poly--summary .pd-poly__pnl { font-size: 44px; }
 .pd-poly--full { padding: 18px 22px; gap: 6px; }
 .pd-poly--full .pd-poly__lb { font-size: 13px; }
 .pd-poly--full .pd-poly__sum { font-size: 17px; gap: 9px; }
