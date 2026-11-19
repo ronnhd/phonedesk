@@ -67,6 +67,7 @@ export interface WeatherData {
 export interface PushedValue {
   value: string | number
   sub?: string
+  items?: string[]
   unit?: string
   ttl?: number
   at: number

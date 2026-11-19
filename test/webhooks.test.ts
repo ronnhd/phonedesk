@@ -100,4 +100,8 @@ describe("parsePushBody", () => {
     expect(parsePushBody('{"value":{"a":1}}', "application/json")).toBeNull();
     expect(parsePushBody("x".repeat(500), "text/plain")!.value).toHaveLength(200);
   });
+  test("keeps a string list for pushed widgets", () => {
+    const parsed = parsePushBody('{"value":2,"items":["a~Yes~0.30~+0.1",3]}', "application/json");
+    expect(parsed).toEqual({ value: 2, items: ["a~Yes~0.30~+0.1"] });
+  });
 });

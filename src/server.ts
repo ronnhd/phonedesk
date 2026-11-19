@@ -240,7 +240,7 @@ export async function startServer(opts: StartOptions = {}) {
   const stopCtl = new AbortController();
   const pushes = new PushStore((key, v) => {
     rules.setPush(key, v?.value);
-    broadcast({ type: "pushed", values: { [key]: v ? { value: v.value, ...(v.sub ? { sub: v.sub } : {}), at: v.at } : null } });
+    broadcast({ type: "pushed", values: { [key]: v ? { value: v.value, ...(v.sub ? { sub: v.sub } : {}), ...(v.items?.length ? { items: v.items } : {}), at: v.at } : null } });
   });
   const addNote = (n: { title: string; body?: string; level?: NotifyLevel; ttl?: number; source?: string }) => {
     const notification = notes.add(n);
@@ -974,7 +974,7 @@ export async function startServer(opts: StartOptions = {}) {
         if (!PUSH_KEY_RE.test(key)) return json({ error: "invalid key" }, 400);
         const v = parsePushBody((await req.text()).slice(0, 4096), req.headers.get("content-type") ?? "");
         if (!v) return json({ error: "send a value as plain text or JSON {value, sub?, ttl?}" }, 400);
-        pushes.set(key, v.value, { sub: v.sub, ttl: v.ttl });
+        pushes.set(key, v.value, { sub: v.sub, ttl: v.ttl, items: v.items });
         return json({ ok: true });
       }
       if (path === "/api/notify" && req.method === "POST") {
@@ -1135,7 +1135,7 @@ export async function startServer(opts: StartOptions = {}) {
         for (const request of questions.list()) send(ws, { type: "question", request });
         if (player.playing().length) send(ws, { type: "sounds-playing", ids: player.playing() });
         const pv = pushes.snapshot();
-        if (Object.keys(pv).length) send(ws, { type: "pushed", values: Object.fromEntries(Object.entries(pv).map(([k, v]) => [k, { value: v.value, ...(v.sub ? { sub: v.sub } : {}), at: v.at }])) });
+        if (Object.keys(pv).length) send(ws, { type: "pushed", values: Object.fromEntries(Object.entries(pv).map(([k, v]) => [k, { value: v.value, ...(v.sub ? { sub: v.sub } : {}), ...(v.items?.length ? { items: v.items } : {}), at: v.at }])) });
         send(ws, { type: "notifications", items: notes.list() });
         if (hassClient) send(ws, { type: "hass", entities: hassClient.snapshot(), connected: hassClient.connected() });
         if (themeOverride) send(ws, { type: "theme-override", mode: themeOverride });

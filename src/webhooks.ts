@@ -57,7 +57,7 @@ export function webhookExamples(o: { ip: string; host: string; port: number; key
   ];
 }
 
-export interface PushValue { value: string | number; sub?: string; at: number; expiresAt?: number }
+export interface PushValue { value: string | number; sub?: string; at: number; expiresAt?: number; items?: string[] }
 
 /** Latest value pushed per key; a value with a ttl disappears after it. */
 export class PushStore {
@@ -65,10 +65,10 @@ export class PushStore {
   private timers = new Map<string, ReturnType<typeof setTimeout>>();
   constructor(private onChange: (key: string, v: PushValue | undefined) => void = () => {}, private now: () => number = Date.now) {}
 
-  set(key: string, value: string | number, o: { sub?: string; ttl?: number } = {}): PushValue {
+  set(key: string, value: string | number, o: { sub?: string; ttl?: number; items?: string[] } = {}): PushValue {
     const at = this.now();
     const ttl = o.ttl && o.ttl > 0 ? Math.min(o.ttl, 30 * 86400) : 0;
-    const v: PushValue = { value, ...(o.sub ? { sub: o.sub.slice(0, 80) } : {}), at, ...(ttl ? { expiresAt: at + ttl * 1000 } : {}) };
+    const v: PushValue = { value, ...(o.sub ? { sub: o.sub.slice(0, 80) } : {}), ...(o.items?.length ? { items: o.items.slice(0, 50) } : {}), at, ...(ttl ? { expiresAt: at + ttl * 1000 } : {}) };
     this.map.set(key, v);
     const old = this.timers.get(key);
     if (old) clearTimeout(old);
@@ -130,15 +130,15 @@ export class NotificationStore {
   clear() { this.items = []; }
 }
 
-/** Body of a push: plain text/number, or JSON {value, sub?, ttl?}. */
-export function parsePushBody(raw: string, contentType: string): { value: string | number; sub?: string; ttl?: number } | null {
+/** Body of a push: plain text/number, or JSON {value, sub?, ttl?, items?}. */
+export function parsePushBody(raw: string, contentType: string): { value: string | number; sub?: string; ttl?: number; items?: string[] } | null {
   const text = raw.trim();
   if (!text) return null;
-  let value: unknown = text, sub: unknown, ttl: unknown;
+  let value: unknown = text, sub: unknown, ttl: unknown, items: unknown;
   if (/json/i.test(contentType) || text.startsWith("{")) {
     try {
       const j = JSON.parse(text);
-      if (j && typeof j === "object" && !Array.isArray(j)) { value = (j as any).value; sub = (j as any).sub; ttl = (j as any).ttl; }
+      if (j && typeof j === "object" && !Array.isArray(j)) { value = (j as any).value; sub = (j as any).sub; ttl = (j as any).ttl; items = (j as any).items; }
       else value = j;
     } catch { /* treat as plain text */ }
   }
@@ -150,5 +150,6 @@ export function parsePushBody(raw: string, contentType: string): { value: string
     if ((value as string).trim() !== "" && Number.isFinite(n)) value = n;
   }
   const t = Number(ttl);
-  return { value: value as string | number, ...(typeof sub === "string" && sub ? { sub } : {}), ...(Number.isFinite(t) && t > 0 ? { ttl: t } : {}) };
+  const cleanItems = Array.isArray(items) ? items.filter((x): x is string => typeof x === "string").slice(0, 50).map((x) => x.slice(0, 200)) : [];
+  return { value: value as string | number, ...(typeof sub === "string" && sub ? { sub } : {}), ...(Number.isFinite(t) && t > 0 ? { ttl: t } : {}), ...(cleanItems.length ? { items: cleanItems } : {}) };
 }

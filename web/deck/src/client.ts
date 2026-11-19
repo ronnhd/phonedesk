@@ -332,7 +332,7 @@ export class DeckClient {
             return
           }
           const o = x && typeof x === 'object' ? x : { value: x }
-          cur[key] = { value: o.value === undefined ? '' : o.value, sub: o.sub, unit: o.unit, ttl: typeof o.ttl === 'number' ? o.ttl : undefined, at: asMs(o.at) }
+          cur[key] = { value: o.value === undefined ? '' : o.value, sub: o.sub, items: Array.isArray(o.items) ? o.items : undefined, unit: o.unit, ttl: typeof o.ttl === 'number' ? o.ttl : undefined, at: asMs(o.at) }
         }
         if (msg.values && typeof msg.values === 'object') Object.keys(msg.values).forEach((k) => put(k, msg.values[k]))
         else put(String(msg.key || ''), msg.key !== undefined && msg.value !== undefined ? { value: msg.value, sub: msg.sub, unit: msg.unit, ttl: msg.ttl, at: msg.at } : msg.data)

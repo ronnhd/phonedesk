@@ -3458,8 +3458,8 @@
 .pd-poly__sum i { font-style: normal; color: var(--pd-muted); }
 .pd-poly__pnl { color: #34d399; }
 .pd-poly__pnl--neg { color: #fb7185; }
-.pd-poly__rows { display: flex; flex-direction: column; flex: 1; min-height: 0; gap: 3px; overflow: hidden; }
-.pd-poly__row { display: flex; align-items: baseline; gap: 6px; min-width: 0; font-size: 11px; line-height: 1.25; }
+.pd-poly__rows { display: flex; flex-direction: column; flex: 1; min-height: 0; gap: 3px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--pd-muted) transparent; }
+.pd-poly__row { flex: 0 0 auto; display: flex; align-items: baseline; gap: 6px; min-width: 0; font-size: 11px; line-height: 1.25; }
 .pd-poly__title { flex: 1 1 auto; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .pd-poly__meta, .pd-poly__row .pd-poly__pnl { flex: 0 0 auto; font-variant-numeric: tabular-nums; color: var(--pd-muted); }
 .pd-poly__row .pd-poly__pnl { color: #34d399; }

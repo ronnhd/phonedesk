@@ -18,8 +18,10 @@ export function PolyLiveTile(props: {
   const parts = (props.val?.sub || '').split('|').filter(Boolean)
   const first = parts.length ? parts.shift()! : ''
   const summary = (first.startsWith('sum~') ? first.slice(4) : first).split('~')
-  const maxRows = props.th >= 150 ? 3 : props.th >= 110 ? 2 : 1
-  const rows: Row[] = parts.slice(0, maxRows).map((part) => {
+  const items = props.val?.items || []
+  const source = items.length ? items : parts
+  const maxRows = items.length ? 50 : props.th >= 150 ? 3 : props.th >= 110 ? 2 : 1
+  const rows: Row[] = source.slice(0, maxRows).map((part) => {
     const cells = String(part).split('~')
     return { title: cells[0] || '', outcome: cells[1] || '', price: cells[2] || '', pnl: cells[3] || '' }
   })
