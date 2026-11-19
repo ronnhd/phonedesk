@@ -3,7 +3,7 @@ import { WIN, MODE600, MODE644 } from "./_os";
 import { mkdtempSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { LAST_ARTWORK_MAX, LastMediaStore, MediaTracker, parseControl, parseMacTrackOutput, parsePlayerctl, resumeScript, type RawMedia } from "../src/media";
+import { LAST_ARTWORK_MAX, LastMediaStore, MediaTracker, parseControl, parseMacTrackOutput, parseNowPlayingJson, appFromBundle, parsePlayerctl, resumeScript, type RawMedia } from "../src/media";
 import { netRate, parseNetstat, parseProcNetDev } from "../src/stats";
 import { buildMacMediaFallback, buildVolumeCommand, parseMacVolumeSettings, parsePactlVolume } from "../src/actions";
 
@@ -25,6 +25,26 @@ describe("parseMacTrackOutput", () => {
   test("empty / stopped output is null", () => {
     expect(parseMacTrackOutput("")).toBeNull();
     expect(parseMacTrackOutput("\n\n")).toBeNull();
+  });
+});
+
+describe("parseNowPlayingJson", () => {
+  test("YouTube Music PWA is mapped by bundle id", () => {
+    const media = parseNowPlayingJson({
+      title: "what if we?", artist: "Emi Choi", album: "", duration: 208,
+      elapsedTime: 3.1, playbackRate: 1,
+      clientBundleIdentifier: "com.brave.Browser.app.cinhimbnkkaeohfgghhklpknlkffjgod",
+    });
+    expect(media).toEqual({ app: "YouTube Music", title: "what if we?", artist: "Emi Choi", album: "", playing: true, position: 3.1, duration: 208 });
+  });
+  test("paused player and missing metadata", () => {
+    expect(parseNowPlayingJson({ title: "T", artist: "", playbackRate: 0, clientBundleIdentifier: "com.apple.Music" })).toMatchObject({ app: "Music", playing: false });
+    expect(parseNowPlayingJson({ title: null, artist: null })).toBeNull();
+    expect(parseNowPlayingJson(null)).toBeNull();
+  });
+  test("unknown bundle falls back to a readable name", () => {
+    expect(appFromBundle("com.example.Player")).toBe("Player");
+    expect(appFromBundle(null)).toBe("Now Playing");
   });
 });
 

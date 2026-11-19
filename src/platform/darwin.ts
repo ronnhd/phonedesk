@@ -1,8 +1,9 @@
+import { existsSync } from "node:fs";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { buildCommand, buildMacMediaFallback, buildVolumeCommand, parseMacVolumeSettings } from "../actions";
-import { MAC_SCRIPT_LINES, parseMacTrackOutput, resumeScript, MEDIA_APPS, type MediaApp, type RawMedia } from "../media";
+import { MAC_SCRIPT_LINES, NOW_PLAYING_PROPS, parseMacTrackOutput, parseNowPlayingJson, resumeScript, MEDIA_APPS, type MediaApp, type RawMedia } from "../media";
 import { parseNetstat } from "../stats";
 import { parsePs, topProcessesFrom } from "../processes";
 import { parseAfinfo } from "../sounds";
@@ -11,6 +12,46 @@ import { runCapture } from "./exec";
 import type { Platform, SecretStore } from "./types";
 
 type Runner = (argv: string[], timeoutMs?: number) => Promise<string>;
+
+const YT_MUSIC_BUNDLE = "com.brave.Browser.app.cinhimbnkkaeohfgghhklpknlkffjgod";
+
+/** launchd may start the agent without /opt/homebrew/bin in PATH, so keep an absolute fallback. */
+function nowPlayingBin(): string | null {
+  const found = Bun.which("nowplaying-cli");
+  if (found) return found;
+  for (const p of ["/opt/homebrew/bin/nowplaying-cli", "/usr/local/bin/nowplaying-cli"]) {
+    if (existsSync(p)) return p;
+  }
+  return null;
+}
+
+/** Reads MediaRemote through nowplaying-cli. Covers players beyond Apple Music and Spotify. */
+async function readNowPlaying(): Promise<RawMedia | null> {
+  const bin = nowPlayingBin();
+  if (!bin) return null;
+  try {
+    const out = await runCapture([bin, "get", "--json", ...NOW_PLAYING_PROPS], 4000);
+    return parseNowPlayingJson(JSON.parse(out));
+  } catch {
+    return null;
+  }
+}
+
+/** Artwork from MediaRemote as a data URL, or undefined when the player has none. */
+async function nowPlayingArtwork(): Promise<string | undefined> {
+  const bin = nowPlayingBin();
+  if (!bin) return undefined;
+  try {
+    const out = await runCapture([bin, "get", "artworkData", "--json"], 5000);
+    const value = JSON.parse(out) as Record<string, unknown>;
+    const raw = typeof value.artworkData === "string" ? value.artworkData.replace(/\s/g, "") : "";
+    if (!raw || raw.length > 900_000) return undefined;
+    const mime = raw.startsWith("iVBOR") ? "image/png" : "image/jpeg";
+    return `data:${mime};base64,${raw}`;
+  } catch {
+    return undefined;
+  }
+}
 
 /** macOS Keychain through `security` (generic passwords). `run` is injectable for tests. */
 export function keychainStore(run: Runner = (argv, ms) => runCapture(argv, ms ?? 5000)): SecretStore {
@@ -53,6 +94,8 @@ async function macMemUsed(): Promise<number | undefined> {
 }
 
 async function readMac(): Promise<RawMedia | null> {
+  const fromRemote = await readNowPlaying();
+  if (fromRemote) return fromRemote;
   const out = await runCapture(["osascript", ...MAC_SCRIPT_LINES.flatMap((l) => ["-e", l])], 4000);
   const media = parseMacTrackOutput(out);
   if (media?.app === "Spotify") {
@@ -70,6 +113,8 @@ async function sipsToJpegDataUrl(input: string, dir: string): Promise<string> {
 
 /** Artwork as a data URL, resized to max 300px with sips. Undefined when unavailable. */
 async function macArtwork(raw: RawMedia): Promise<string | undefined> {
+  const remote = await nowPlayingArtwork();
+  if (remote) return remote;
   const dir = await mkdtemp(join(tmpdir(), "pd-art-"));
   try {
     const src = join(dir, "src");
@@ -116,7 +161,8 @@ export function createDarwin(): Platform {
 
     async runAction(a) {
       if (a.type === "media") {
-        if (Bun.which("nowplaying-cli")) return void (await runCapture(buildCommand(a, "darwin")));
+        const bin = nowPlayingBin();
+        if (bin) return void (await runCapture([bin, a.command === "playpause" ? "togglePlayPause" : a.command]));
         return void (await runCapture(buildMacMediaFallback(a.command)));
       }
       await runCapture(buildCommand(a, "darwin"));
@@ -130,6 +176,16 @@ export function createDarwin(): Platform {
     readMedia: readMac,
     fetchArtwork: macArtwork,
     async resumeMedia(lastApp) {
+      if (lastApp === "YouTube Music") {
+        const bin = nowPlayingBin();
+        if (!bin) {
+          await runCapture(["open", "-b", YT_MUSIC_BUNDLE], 15000);
+          return;
+        }
+        await runCapture([bin, "play"], 5000).catch(() => {});
+        await runCapture(["open", "-b", YT_MUSIC_BUNDLE], 15000);
+        return;
+      }
       const plan = resumeScript({ Spotify: await isRunning("Spotify"), Music: await isRunning("Music") }, lastApp);
       await runCapture(["osascript", ...plan.lines.flatMap((l) => ["-e", l])], plan.launches ? 15000 : 5000);
     },

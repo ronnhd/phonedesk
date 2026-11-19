@@ -96,6 +96,41 @@ export function parseMacTrackOutput(output: string): RawMedia | null {
   return found.find((m) => m.playing) ?? found[0] ?? null;
 }
 
+/** Properties requested from `nowplaying-cli get --json` for media reading. */
+export const NOW_PLAYING_PROPS = ["title", "artist", "album", "duration", "elapsedTime", "playbackRate", "clientBundleIdentifier"] as const;
+
+/** Maps a MediaRemote client bundle id to the name PhoneDesk shows on the tile. */
+export function appFromBundle(bundle: unknown): string {
+  const id = typeof bundle === "string" ? bundle : "";
+  if (id === "com.apple.Music") return "Music";
+  if (id === "com.spotify.client") return "Spotify";
+  if (/youtube.*music|cinhimbnkkaeohfgghhklpknlkffjgod/i.test(id)) return "YouTube Music";
+  const last = id.split(".").pop();
+  return last ? last.replace(/[_-]+/g, " ") : "Now Playing";
+}
+
+/** Parses the JSON object from `nowplaying-cli get --json ...NOW_PLAYING_PROPS`. */
+export function parseNowPlayingJson(value: unknown): RawMedia | null {
+  if (!value || typeof value !== "object") return null;
+  const v = value as Record<string, unknown>;
+  const title = typeof v.title === "string" ? v.title : "";
+  const artist = typeof v.artist === "string" ? v.artist : "";
+  if (!title && !artist) return null;
+  const n = (x: unknown) => {
+    const d = typeof x === "number" ? x : Number(x ?? 0);
+    return Number.isFinite(d) && d >= 0 ? d : 0;
+  };
+  return {
+    app: appFromBundle(v.clientBundleIdentifier),
+    title,
+    artist,
+    album: typeof v.album === "string" ? v.album : "",
+    playing: n(v.playbackRate) > 0,
+    position: n(v.elapsedTime),
+    duration: n(v.duration),
+  };
+}
+
 /** Parses `playerctl metadata --format` output (see LINUX_FORMAT). Position and length are microseconds. */
 export function parsePlayerctl(output: string): RawMedia | null {
   const line = output.split(/\r?\n/).find((l) => l.includes(US));
