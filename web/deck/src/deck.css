@@ -3481,18 +3481,18 @@
 .pd-poly--full .pd-poly__lb { font-size: 13px; }
 .pd-poly--full .pd-poly__sum { font-size: 17px; gap: 9px; }
 .pd-poly--full .pd-poly__sum b { font-size: 30px; }
-.pd-poly--full .pd-poly__rows { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); grid-auto-rows: auto; align-content: start; gap: 12px; overflow-y: auto; }
-.pd-poly--full .pd-poly__card { display: flex; flex-direction: column; gap: 5px; min-width: 0; padding: 12px 14px; border: 1px solid var(--pd-border); border-radius: 12px; background: rgba(255, 255, 255, 0.035); }
+.pd-poly--full .pd-poly__rows { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); grid-auto-rows: 1fr; align-content: stretch; gap: 12px; overflow-y: auto; }
+.pd-poly--full .pd-poly__card { display: flex; flex-direction: column; justify-content: space-between; gap: 5px; min-width: 0; padding: 12px 14px; border: 1px solid var(--pd-border); border-radius: 12px; background: rgba(255, 255, 255, 0.035); }
 .pd-poly--full .pd-poly__chead { display: flex; align-items: flex-start; gap: 8px; min-width: 0; }
 .pd-poly--full .pd-poly__cicon { width: 24px; height: 24px; flex: 0 0 auto; border-radius: 50%; object-fit: cover; }
 .pd-poly--full .pd-poly__cicon--blank { display: grid; place-items: center; background: rgba(255, 255, 255, 0.08); font-size: 12px; }
-.pd-poly--full .pd-poly__ctitle { font-size: 13px; font-weight: 600; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.pd-poly--full .pd-poly__cside { font-size: 12px; color: var(--pd-muted); }
+.pd-poly--full .pd-poly__ctitle { font-size: 15px; font-weight: 600; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.pd-poly--full .pd-poly__cside { font-size: 14px; color: var(--pd-muted); }
 .pd-poly--full .pd-poly__cside b { color: var(--pd-text); }
 .pd-poly--full .pd-poly__cshares { font-size: 11px; color: var(--pd-muted); }
 .pd-poly--full .pd-poly__cmetrics { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; margin-top: 2px; }
 .pd-poly--full .pd-poly__cmetrics div { display: flex; flex-direction: column; gap: 2px; min-width: 0; padding: 5px 6px; border-radius: 8px; background: rgba(255, 255, 255, 0.04); }
 .pd-poly--full .pd-poly__cmetrics span { font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--pd-muted); white-space: nowrap; }
-.pd-poly--full .pd-poly__cmetrics b { font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.pd-poly--full .pd-poly__cpnl { font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; color: #34d399; }
+.pd-poly--full .pd-poly__cmetrics b { font-size: 14px; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pd-poly--full .pd-poly__cpnl { font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; color: #34d399; }
 .pd-poly--full .pd-poly__cpnl--neg { color: #fb7185; }

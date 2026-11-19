@@ -1759,6 +1759,9 @@ export function Deck(props: DeckProps) {
                   const cols = Math.max(1, p.columns | 0)
                   const rows = Math.max(1, (p.rows || 4) | 0)
                   const cell = cellSize(p, box)
+                  const stretch = p.id === 'polymarket'
+                  const cellW = stretch ? Math.max(16, Math.floor((box.w - box.gap * (cols - 1)) / cols)) : cell
+                  const cellH = stretch ? Math.max(16, Math.floor((box.h - box.gap * (rows - 1)) / rows)) : cell
                   const step = cell + box.gap
                   const items = placeItems(p)
                   const dg = drag && drag.pageId === p.id ? drag : null
@@ -1786,7 +1789,7 @@ export function Deck(props: DeckProps) {
                       <div
                         class="pd-grid"
                         data-grid={p.id}
-                        style={{ gridTemplateColumns: 'repeat(' + cols + ', ' + cell + 'px)', gridTemplateRows: 'repeat(' + rows + ', ' + cell + 'px)' }}
+                        style={{ gridTemplateColumns: 'repeat(' + cols + ', ' + cellW + 'px)', gridTemplateRows: 'repeat(' + rows + ', ' + cellH + 'px)' }}
                       >
                         {slots}
                         {items.map((it) => (
@@ -1799,8 +1802,8 @@ export function Deck(props: DeckProps) {
                             selected={preview && pv.selectedId === it.id}
                             dragging={!!dg && dg.itemId === it.id && dg.kind === 'move'}
                             showHandle={preview && pv.selectedId === it.id}
-                            tw={cell * it.pw + box.gap * (it.pw - 1)}
-                            th={cell * it.ph + box.gap * (it.ph - 1)}
+                            tw={cellW * it.pw + box.gap * (it.pw - 1)}
+                            th={cellH * it.ph + box.gap * (it.ph - 1)}
                             scale={scale}
                             tt={tt}
                             preview={preview}
