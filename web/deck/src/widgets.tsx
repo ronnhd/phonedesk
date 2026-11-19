@@ -5,6 +5,7 @@ import type { AiWidgetProps } from './ai'
 import { Rings, SlotSpark } from './charts'
 import { BarSpark, Donut, MeterBar, windowSeries } from './metric-charts'
 import { NowPlayingTile } from './now-playing'
+import { PolyLiveTile } from './polymarket'
 import { ClockWidget } from './clocks'
 import { EntityTile } from './entity'
 import { NotificationsTile, ValueTile, WeatherTile } from './automation'
@@ -112,6 +113,7 @@ export function Widget(props: WidgetProps) {
   if (props.kind === 'entity' && props.entity) return <EntityTile id={props.entity.id} cfg={props.entity} ent={props.hassEnt} forceOn={props.hassForceOn} pend={props.entPend} onStep={props.onStep} onLight={props.onLight} connected={props.hassConnected !== false} tw={props.tw} th={props.th} scale={props.scale} showLabel={props.showLabel} color={props.color} textColor={props.textColor} assets={props.assets} />
   if (props.kind === 'weather') return <WeatherTile opts={props.weather} data={props.wxData} tw={props.tw} th={props.th} cw={props.cw} ch={props.ch} scale={props.scale} showLabel={props.showLabel} textColor={props.textColor} assets={props.assets} />
   if (props.kind === 'value' && props.push) return <ValueTile cfg={props.push} val={props.pushed} tw={props.tw} th={props.th} scale={props.scale} showLabel={props.showLabel} color={props.color} textColor={props.textColor} />
+  if (props.kind === 'polymarket') return <PolyLiveTile cfg={props.push} val={props.pushed} tw={props.tw} th={props.th} color={props.color} textColor={props.textColor} showLabel={props.showLabel} />
   if (props.kind === 'notifications') return <NotificationsTile notes={props.notes || []} tw={props.tw} th={props.th} showLabel={props.showLabel} textColor={props.textColor} />
   if (props.kind === 'nowplaying') return <NowPlayingTile media={props.media} last={props.last} stats={props.stats} tw={props.tw} th={props.th} scale={props.scale} showLabel={props.showLabel} textColor={props.textColor} onMedia={props.onMedia} onVolume={props.onVolume} />
   if (props.kind === 'quota') return <QuotaWidget {...(props as AiWidgetProps)} />

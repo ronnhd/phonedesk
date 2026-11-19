@@ -77,7 +77,7 @@ export function findFree(page: Page, w = 1, h = 1): { x: number; y: number } | u
 
 /** Preferred size of a widget: big for clock and now-playing, 2x1 for the metrics. */
 export const WIDGET_SIZE: Record<WidgetKind, [number, number]> = {
-  clock: [4, 2], nowplaying: [4, 2], cpu: [2, 1], memory: [2, 1], uptime: [2, 1], load: [2, 1], network: [2, 1], quota: [2, 2], sessions: [2, 3], entity: [1, 1], weather: [2, 2], value: [2, 1], notifications: [2, 2],
+  clock: [4, 2], nowplaying: [4, 2], cpu: [2, 1], memory: [2, 1], uptime: [2, 1], load: [2, 1], network: [2, 1], quota: [2, 2], sessions: [2, 3], entity: [1, 1], weather: [2, 2], value: [2, 1], notifications: [2, 2], polymarket: [4, 1],
 };
 
 /** Candidate sizes, largest first, ending with 1x1. */
@@ -226,11 +226,11 @@ export const PROVIDER_LABEL: Record<string, string> = { omni: "OpenCode Go", cla
 
 export const WIDGET_HINT: Record<WidgetKind, string> = {
   clock: "Time and date", nowplaying: "Current track", cpu: "CPU usage (click to see processes)", memory: "Memory in use",
-  uptime: "How long the Mac has been running", load: "System load", network: "Network speed", quota: "Claude / Codex / Antigravity quota", sessions: "Running AI sessions", entity: "Home Assistant device", weather: "Weather", value: "Value pushed from outside (webhook)", notifications: "Recent notifications",
+  uptime: "How long the Mac has been running", load: "System load", network: "Network speed", quota: "Claude / Codex / Antigravity quota", sessions: "Running AI sessions", entity: "Home Assistant device", weather: "Weather", value: "Value pushed from outside (webhook)", notifications: "Recent notifications", polymarket: "Live Polymarket open positions",
 };
 
 export const WIDGET_LABEL: Record<string, string> = {
-  clock: "Clock", cpu: "CPU", memory: "Memory", uptime: "Uptime", load: "System load", network: "Network", nowplaying: "Now playing", quota: "AI quota", sessions: "AI sessions", entity: "Home (Home Assistant)", weather: "Weather", value: "Pushed value", notifications: "Notifications",
+  clock: "Clock", cpu: "CPU", memory: "Memory", uptime: "Uptime", load: "System load", network: "Network", nowplaying: "Now playing", quota: "AI quota", sessions: "AI sessions", entity: "Home (Home Assistant)", weather: "Weather", value: "Pushed value", notifications: "Notifications", polymarket: "Polymarket",
 };
 
 export const ACTION_LABEL: Record<ActionType, string> = {

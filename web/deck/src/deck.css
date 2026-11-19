@@ -3449,3 +3449,24 @@
 .pd-qrow__n { max-width: 48%; }
 .pd-qrow__bar { min-width: 0; } .pd-qrow__n { -webkit-flex: 0 1 auto; flex: 0 1 auto; }
 .pd-page { -webkit-scroll-snap-stop: always; scroll-snap-stop: always; }
+
+/* ---------- live Polymarket positions ---------- */
+.pd-poly { display: flex; flex-direction: column; height: 100%; min-width: 0; overflow: hidden; padding: 12px; gap: 4px; }
+.pd-poly__lb { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--pd-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pd-poly__sum { display: flex; align-items: baseline; gap: 5px; font-size: 13px; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; }
+.pd-poly__sum b { font-size: 17px; }
+.pd-poly__sum i { font-style: normal; color: var(--pd-muted); }
+.pd-poly__pnl { color: #34d399; }
+.pd-poly__pnl--neg { color: #fb7185; }
+.pd-poly__rows { display: flex; flex-direction: column; flex: 1; min-height: 0; gap: 3px; overflow: hidden; }
+.pd-poly__row { display: flex; align-items: baseline; gap: 6px; min-width: 0; font-size: 11px; line-height: 1.25; }
+.pd-poly__title { flex: 1 1 auto; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.pd-poly__meta, .pd-poly__row .pd-poly__pnl { flex: 0 0 auto; font-variant-numeric: tabular-nums; color: var(--pd-muted); }
+.pd-poly__row .pd-poly__pnl { color: #34d399; }
+.pd-poly__row .pd-poly__pnl--neg { color: #fb7185; }
+.pd-poly__empty, .pd-poly__t { font-size: 10px; color: var(--pd-muted); }
+.pd-poly__t { margin-top: auto; }
+.pd-poly--compact { padding: 8px; gap: 2px; }
+.pd-poly--compact .pd-poly__sum { font-size: 11px; }
+.pd-poly--compact .pd-poly__sum b { font-size: 14px; }
+.pd-poly--compact .pd-poly__row { font-size: 10px; }

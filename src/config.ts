@@ -41,7 +41,7 @@ export type SoundMode = "overlap" | "restart" | "toggle";
 export const SOUND_ID_RE = /^snd:[a-f0-9]{16}$/;
 
 /** nowplaying = current track + transport + volume (agent sends {type:"media"}); network = rx/tx rates. */
-export type WidgetKind = "clock" | "cpu" | "memory" | "uptime" | "load" | "network" | "nowplaying" | "quota" | "sessions" | "entity" | "weather" | "value" | "notifications";
+export type WidgetKind = "clock" | "cpu" | "memory" | "uptime" | "load" | "network" | "nowplaying" | "quota" | "sessions" | "entity" | "weather" | "value" | "notifications" | "polymarket";
 
 /** AI coding tools PhoneDesk reads quotas/sessions from. A "quota" widget shows one provider (item.provider). */
 export type AiProvider = "omni" | "claude" | "codex" | "antigravity" | "opencode" | "grok";
@@ -196,7 +196,7 @@ const LAYOUT_FILE = join(HOME, "layout.json");
 const DEVICES_FILE = join(HOME, "devices.json");
 
 export const ACTION_TYPES = ["open", "hotkey", "type", "shell", "media", "volume", "page", "sound", "sound-stop", "hass", "macro"] as const;
-export const WIDGET_KINDS: WidgetKind[] = ["clock", "cpu", "memory", "uptime", "load", "network", "nowplaying", "quota", "sessions", "entity", "weather", "value", "notifications"];
+export const WIDGET_KINDS: WidgetKind[] = ["clock", "cpu", "memory", "uptime", "load", "network", "nowplaying", "quota", "sessions", "entity", "weather", "value", "notifications", "polymarket"];
 
 export function defaultLayout(): Layout {
   return {
@@ -608,7 +608,7 @@ export function validateLayout(raw: any): Layout {
         const metric = (METRIC_WIDGETS as readonly string[]).includes(it.widget) ? metricOptions(it.metric, it.widget, `${w}.metric`) : undefined;
         const quota = it.widget === "quota" ? quotaOptions(it.quota, `${w}.quota`) : undefined;
         const weather = it.widget === "weather" ? weatherOptions(it.weather, `${w}.weather`) : undefined;
-        const push = it.widget === "value" ? pushOptions(it.push, `${w}.push`) : undefined;
+        const push = (it.widget === "value" || it.widget === "polymarket") ? pushOptions(it.push, `${w}.push`) : undefined;
         let entity: EntityOptions | undefined;
         if (it.widget === "entity") {
           const e = it.entity;

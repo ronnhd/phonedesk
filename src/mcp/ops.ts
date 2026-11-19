@@ -6,12 +6,12 @@ const fail = (reason: string): OpResult => ({ ok: false, reason });
 
 /** Preferred size of a widget (columns x rows), as the management page uses. */
 export const WIDGET_SIZE: Record<WidgetKind, [number, number]> = {
-  clock: [4, 2], nowplaying: [4, 2], cpu: [2, 1], memory: [2, 1], uptime: [2, 1], load: [2, 1], network: [2, 1], quota: [2, 2], sessions: [2, 3], entity: [2, 1], value: [2, 1], weather: [2, 2], notifications: [2, 2],
+  clock: [4, 2], nowplaying: [4, 2], cpu: [2, 1], memory: [2, 1], uptime: [2, 1], load: [2, 1], network: [2, 1], quota: [2, 2], sessions: [2, 3], entity: [2, 1], value: [2, 1], weather: [2, 2], notifications: [2, 2], polymarket: [4, 1],
 };
 
 export const THEME_KEYS = ["mode", "accent", "background", "tile", "radius", "gap", "fontScale", "tileStyle", "iconScale", "iconStroke", "showLabels", "text", "orientation"];
 /** Fields an item may carry besides id/kind/x/y/w/h. */
-const ITEM_FIELDS = ["label", "icon", "color", "action", "widget", "provider", "clock", "metric", "quota", "entity", "style", "textColor", "hideLabel"];
+const ITEM_FIELDS = ["label", "icon", "color", "action", "widget", "provider", "clock", "metric", "quota", "entity", "push", "style", "textColor", "hideLabel"];
 const GEOMETRY = ["x", "y", "w", "h"];
 
 interface Rect { x: number; y: number; w: number; h: number }

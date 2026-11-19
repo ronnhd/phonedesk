@@ -12,7 +12,7 @@ export type Action =
   | { type: 'macro'; steps: { kind: string; [k: string]: unknown }[] }
   | { type: 'hass'; service: string; entityId?: string; data?: { [k: string]: unknown } }
 
-export type WidgetKind = 'clock' | 'cpu' | 'memory' | 'uptime' | 'load' | 'network' | 'nowplaying' | 'quota' | 'sessions' | 'entity' | 'weather' | 'value' | 'notifications'
+export type WidgetKind = 'clock' | 'cpu' | 'memory' | 'uptime' | 'load' | 'network' | 'nowplaying' | 'quota' | 'sessions' | 'entity' | 'weather' | 'value' | 'notifications' | 'polymarket'
 
 export type ClockStyle = 'digital' | 'flip' | 'analog' | 'minimal' | 'word' | 'world'
 export interface ClockOptions {
