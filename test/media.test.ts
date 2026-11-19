@@ -120,6 +120,30 @@ describe("MediaTracker", () => {
     expect(artCalls).toEqual(["T", "T2", "T"]); // one fetch per track change, none on pause/seek
   });
 
+  test("brief empty artwork keeps the cover on the same title and retries until it returns", async () => {
+    let t = 0;
+    let polls = 0;
+    let calls = 0;
+    const tracker = new MediaTracker({
+      read: async () => { polls++; return { ...base, artist: polls < 3 ? "Wrong" : "Right" }; },
+      artwork: async () => { calls++; return calls === 2 ? undefined : calls === 3 ? "data:cover2" : "data:cover"; },
+      now: () => t,
+    });
+    const first = await tracker.poll();
+    expect(first.media?.artwork).toBe("data:cover");
+    t += 1000;
+    expect((await tracker.poll()).media?.artwork).toBe("data:cover");
+    t += 1000;
+    const flicker = await tracker.poll();
+    expect(flicker.trackChanged).toBe(true);
+    expect(flicker.media?.artwork).toBe("data:cover"); // old cover kept while metadata settles
+    t += 5000;
+    const retried = await tracker.poll();
+    expect(retried.artworkChanged).toBe(true);
+    expect(retried.media?.artwork).toBe("data:cover2");
+    expect(calls).toBe(3);
+  });
+
   test("nothing playing: null once, then unchanged", async () => {
     const { tracker } = make([base, null, null]);
     await tracker.poll();

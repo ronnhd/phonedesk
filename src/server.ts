@@ -397,8 +397,8 @@ export async function startServer(opts: StartOptions = {}) {
       } else if (r.changed) void lastMedia.persist(true); // stopped: keep the final position
       if (!r.changed || stopped) return;
       rules.setMedia(!!r.media?.playing);
-      // artwork rides along on connect and when the track changes only
-      const media = r.media && !r.trackChanged ? { ...r.media, artwork: undefined } : r.media;
+      // artwork rides along on connect, track changes and when a cached cover changes
+      const media = r.media && !r.trackChanged && !r.artworkChanged ? { ...r.media, artwork: undefined } : r.media;
       broadcast(mediaMsg(media));
     } finally {
       polling = false;

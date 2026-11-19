@@ -1,6 +1,7 @@
 import { Soundboard, soundKey } from './sounds'
 import { t } from './i18n'
 import { setPlatform } from './platform'
+import { mediaWithPreviousArtwork } from './media-merge'
 import type { QuestionRequest, GotoReq, Notice, PushedValue, WeatherData, HassState, AiData, Layout, Media, MediaCommand, PermissionRequest, ProcInfo, Stats } from './types'
 
 /** Connection to the PhoneDesk agent: pairing (REST) + live deck (WebSocket). No UI code here. */
@@ -421,8 +422,9 @@ export class DeckClient {
       case 'media': {
         const now = Date.now()
         if (msg.media) {
-          this.lastSeen = Object.assign({}, msg.media, { playing: false, at: now })
-          this.set({ media: Object.assign({}, msg.media, { at: now }), lastMedia: null })
+          const incoming = mediaWithPreviousArtwork(this.state.media, msg.media)
+          this.lastSeen = Object.assign({}, incoming, { playing: false, at: now })
+          this.set({ media: Object.assign({}, incoming, { at: now }), lastMedia: null })
         } else {
           const l = msg.last
           // the agent clock may differ from the phone's: only trust `at` when it is plausible
