@@ -97,7 +97,10 @@ export function parseMacTrackOutput(output: string): RawMedia | null {
 }
 
 /** Properties requested from `nowplaying-cli get --json` for media reading. */
-export const NOW_PLAYING_PROPS = ["title", "artist", "album", "duration", "elapsedTime", "playbackRate", "clientBundleIdentifier"] as const;
+export const NOW_PLAYING_PROPS = ["title", "artist", "album", "duration", "playbackRate", "clientBundleIdentifier"] as const;
+
+/** get-raw uses full MediaRemote keys; the `elapsedTime` alias of `get` reports 0 in nowplaying-cli 2.1.0. */
+export const RAW_ELAPSED_KEY = "kMRMediaRemoteNowPlayingInfoElapsedTime";
 
 /** Maps a MediaRemote client bundle id to the name PhoneDesk shows on the tile. */
 export function appFromBundle(bundle: unknown): string {

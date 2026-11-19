@@ -3,7 +3,7 @@ import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { buildCommand, buildMacMediaFallback, buildVolumeCommand, parseMacVolumeSettings } from "../actions";
-import { MAC_SCRIPT_LINES, NOW_PLAYING_PROPS, parseMacTrackOutput, parseNowPlayingJson, resumeScript, MEDIA_APPS, type MediaApp, type RawMedia } from "../media";
+import { MAC_SCRIPT_LINES, NOW_PLAYING_PROPS, RAW_ELAPSED_KEY, parseMacTrackOutput, parseNowPlayingJson, resumeScript, MEDIA_APPS, type MediaApp, type RawMedia } from "../media";
 import { parseNetstat } from "../stats";
 import { parsePs, topProcessesFrom } from "../processes";
 import { parseAfinfo } from "../sounds";
@@ -25,13 +25,51 @@ function nowPlayingBin(): string | null {
   return null;
 }
 
+interface PositionAnchor {
+  key: string;
+  base: number;
+  at: number;
+  playing: boolean;
+}
+let positionAnchor: PositionAnchor | null = null;
+const ANCHOR_AGE_MS = 30_000;
+
+const trackKey = (m: RawMedia) => `${m.app}|${m.title}|${m.artist}`;
+
+/** get-raw is the only reliable source of elapsed time; the `elapsedTime` alias returns 0. */
+async function readRawPosition(bin: string): Promise<number | null> {
+  try {
+    const out = await runCapture([bin, "get-raw"], 5000);
+    const raw = JSON.parse(out) as Record<string, unknown>;
+    const value = Number(raw[RAW_ELAPSED_KEY]);
+    return Number.isFinite(value) && value >= 0 ? value : null;
+  } catch {
+    return null;
+  }
+}
+
 /** Reads MediaRemote through nowplaying-cli. Covers players beyond Apple Music and Spotify. */
 async function readNowPlaying(): Promise<RawMedia | null> {
   const bin = nowPlayingBin();
   if (!bin) return null;
   try {
     const out = await runCapture([bin, "get", "--json", ...NOW_PLAYING_PROPS], 4000);
-    return parseNowPlayingJson(JSON.parse(out));
+    const media = parseNowPlayingJson(JSON.parse(out));
+    if (!media) {
+      positionAnchor = null;
+      return null;
+    }
+    const key = trackKey(media);
+    const now = Date.now();
+    const stale = !positionAnchor || positionAnchor.key !== key || now - positionAnchor.at > ANCHOR_AGE_MS || positionAnchor.playing !== media.playing;
+    if (stale) {
+      const base = (await readRawPosition(bin)) ?? positionAnchor?.base ?? 0;
+      positionAnchor = { key, base, at: now, playing: media.playing };
+    }
+    const a = positionAnchor!;
+    const elapsed = media.playing ? (now - a.at) / 1000 : 0;
+    media.position = Math.max(0, Math.min(media.duration || Infinity, a.base + elapsed));
+    return media;
   } catch {
     return null;
   }
