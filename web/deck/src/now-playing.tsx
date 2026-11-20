@@ -77,8 +77,10 @@ interface Track {
  * The cover: an image, or a gradient made from the words. With no track a calm placeholder: a brand-tinted record (CSS rings on a soft
  * gradient) with a music note; `bare` leaves the note out when a play button sits on top. (now-playing.tsx: NowPlayingCover)
  */
-function Cover(props: { track: Track | null; size: number; round: number; bare?: boolean }) {
+function Cover(props: { track: Track | null; size: number; round: number; bare?: boolean; playing?: boolean }) {
   const st = { width: props.size + 'px', height: props.size + 'px', borderRadius: props.round + 'px' }
+  const disc = !!props.track?.cover
+  const cls = 'pd-npc' + (disc ? ' pd-npc--disc' : '') + (disc && props.playing && !reducedMotion() ? ' pd-npc--spin' : '')
   if (!props.track) {
     return (
       <span class="pd-npc pd-npc--ph" style={st} aria-hidden="true">
@@ -86,7 +88,7 @@ function Cover(props: { track: Track | null; size: number; round: number; bare?:
       </span>
     )
   }
-  if (props.track.cover) return <span class="pd-npc" style={Object.assign({ backgroundImage: 'url("' + props.track.cover.replace(/"/g, '%22') + '")' }, st)} aria-hidden="true" />
+  if (props.track.cover) return <span class={cls} style={Object.assign({ backgroundImage: 'url("' + props.track.cover.replace(/"/g, '%22') + '")' }, st)} aria-hidden="true" />
   const seed = props.track.title + props.track.artist
   return <span class="pd-npc" style={Object.assign({ backgroundColor: coverFallback(seed), backgroundImage: coverGradient(seed) }, st)} aria-hidden="true" />
 }
@@ -310,18 +312,18 @@ export function NowPlayingTile(props: NowPlayingTileProps) {
     )
   const CoverX = (size: number, round: number) =>
     state !== 'playing' ? (
-      <Cover track={vt} size={size} round={round} />
+      <Cover track={vt} size={size} round={round} playing={false} />
     ) : tr && g ? (
       <span class="pd-npx__cv" style={{ width: size + 'px', height: size + 'px' }}>
         <span class="pd-npx__lay" style={layer(0.35 + 0.65 * g.out, -8 * easeOut(trP), 0.88 + 0.12 * g.out)}>
-          <Cover track={tr.from} size={size} round={round} />
+          <Cover track={tr.from} size={size} round={round} playing={playing} />
         </span>
         <span class="pd-npx__lay" style={layer(0.2 + 0.8 * g.in, 8 * (1 - easeOut(trP)), 0.88 + 0.12 * g.in)}>
-          <Cover track={track} size={size} round={round} />
+          <Cover track={track} size={size} round={round} playing={playing} />
         </span>
       </span>
     ) : (
-      <Cover track={track} size={size} round={round} />
+      <Cover track={track} size={size} round={round} playing={playing} />
     )
 
   const Scrub = () => {

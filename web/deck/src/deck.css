@@ -1476,6 +1476,29 @@
   background-position: center;
   box-shadow: 0 8px 24px -14px rgba(0, 0, 0, 0.6);
 }
+.pd-npc--disc {
+  position: relative;
+  border-radius: 50% !important;
+  box-shadow: 0 10px 26px -14px rgba(0, 0, 0, 0.7), inset 0 0 0 1px rgba(255, 255, 255, 0.16), inset 0 0 0 5px rgba(0, 0, 0, 0.22);
+  animation: pd-vinyl-spin 8s linear infinite;
+  animation-play-state: paused;
+  will-change: transform;
+}
+.pd-npc--disc::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 30%;
+  height: 30%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, rgba(8, 10, 14, 0.96) 0 26%, rgba(236, 238, 244, 0.92) 28% 100%);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+.pd-npc--spin { animation-play-state: running; }
+@keyframes pd-vinyl-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .pd-npc--disc { animation: none; } }
 .pd-npc--empty {
   background: rgba(139, 139, 148, 0.16);
   color: var(--pd-muted);
