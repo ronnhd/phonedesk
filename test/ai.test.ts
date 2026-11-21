@@ -7,7 +7,7 @@ import { fetchCodexQuota, parseLatestRateLimits, toQuotaWindows } from "../src/a
 import { fetchAntigravityQuota, parseAgyUsage } from "../src/ai/antigravity";
 import { claudeNeedsInput, codexNeedsInput, decodeProjectDir, listSessions, projectName, sessionState, summarizeClaudeTail, summarizeCodex } from "../src/ai/sessions";
 import { AiHub } from "../src/ai";
-import { petStateFromAge } from "../src/ai/omniroute";
+import { petStateFromAge, startOfTodayIso } from "../src/ai/omniroute";
 import { windowLabel } from "../src/ai/types";
 
 const tmp = (p: string) => mkdtempSync(join(tmpdir(), p));
@@ -322,6 +322,11 @@ describe("AiHub", () => {
     const snap = hub.snapshot();
     expect(snap.providers.map((p) => p.id)).toEqual(["omni", "claude", "codex", "antigravity", "opencode", "grok"]);
     expect(snap.providers[3]!.error).toContain("agy down");
+  });
+
+  test("startOfTodayIso uses local midnight", () => {
+    const now = new Date(2026, 10, 21, 15, 42, 7);
+    expect(startOfTodayIso(now)).toBe(new Date(2026, 10, 21).toISOString());
   });
 
   test("omni pet activity thresholds", () => {

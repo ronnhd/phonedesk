@@ -73,6 +73,11 @@ export function readOmniAllowance(): ProviderQuota | null {
 
 export type PetState = "busy" | "idle" | "sleep";
 
+/** Local midnight as an ISO string, for "today" counters instead of rolling 24 h. */
+export function startOfTodayIso(now = new Date()): string {
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+}
+
 /** Activity thresholds: recent request means busy, otherwise idle, otherwise asleep. */
 export function petStateFromAge(ageMs: number): PetState {
   return ageMs <= 12_000 ? "busy" : ageMs <= 90_000 ? "idle" : "sleep";
@@ -104,12 +109,13 @@ export function readOmniPet(): OmniPet | null {
   }
 }
 
-/** Rolling 24 h spend, token volume and gateway state, all from OmniRoute's own tables. */
+/** Rolling 24 h spend, token volume since local midnight and gateway state, all from OmniRoute's own tables. */
 export function readOmniValues(): OmniValues | null {
   const db = open();
   if (!db) return null;
   try {
     const since = new Date(Date.now() - 24 * 3600_000).toISOString();
+    const sinceToday = startOfTodayIso();
     const names = new Map<string, string>();
     for (const r of db.query<{ provider: string; name: string | null }, []>(
       "SELECT provider, name FROM provider_connections WHERE is_active = 1",
@@ -134,7 +140,7 @@ export function readOmniValues(): OmniValues | null {
              COALESCE(SUM(tokens_input + tokens_output), 0) AS tokens,
              COALESCE(SUM(CASE WHEN provider = 'opencode-go' THEN tokens_input + tokens_output ELSE 0 END), 0) AS omni
       FROM usage_history WHERE timestamp >= ?
-    `).get(since)!;
+    `).get(sinceToday)!;
     const share = vol.tokens > 0 ? Math.round((vol.omni / vol.tokens) * 100) : 0;
     const volume: OmniValues["volume"] = {
       value: compact(vol.tokens),
