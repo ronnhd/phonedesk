@@ -410,7 +410,8 @@ export function ValueTile(props: ValueProps) {
   const unit = props.cfg.unit || (v && v.unit) || ''
   const len = (text + unit).length
   const withPet = !!props.cfg.pet && tw >= 150 && th >= 70
-  const vs = Math.max(16, Math.min(Math.floor(th * (v && v.sub ? 0.34 : 0.42)), Math.floor((tw - pad * 2 - (withPet ? 34 : 0)) / (Math.max(2, len) * 0.56)), 56))
+  const petSize = withPet ? Math.max(30, Math.min(64, Math.floor(th * 0.46))) : 0
+  const vs = Math.max(16, Math.min(Math.floor(th * (withPet ? 0.24 : (v && v.sub ? 0.34 : 0.42))), Math.floor((tw - pad * 2 - (withPet ? petSize + 10 : 0)) / (Math.max(2, len) * 0.56)), withPet ? 40 : 56))
   const col = props.textColor || props.color || undefined
   return (
     <div class={'pd-vl' + (stale ? ' pd-vl--stale' : '') + (withPet ? ' pd-vl--pet' : '')} style={{ padding: pad + 'px' }}>
@@ -421,7 +422,7 @@ export function ValueTile(props: ValueProps) {
         {text}
         {unit ? <i style={{ fontSize: Math.max(10, Math.round(vs * 0.42)) + 'px' }}>{unit}</i> : null}
       </span>
-      {withPet ? <OmniPet val={props.petVal} size={Math.max(24, Math.min(40, Math.floor(th * 0.34)))} /> : null}
+      {withPet ? <OmniPet val={props.petVal} size={petSize} /> : null}
       {v && v.sub && th >= 80 ? <span class="pd-vl__sub">{v.sub}</span> : null}
       <span class="pd-vl__t">{v ? (stale ? t('Stale') + ' · ' : '') + relTime(v.at, now) : t('No data yet')}</span>
     </div>
