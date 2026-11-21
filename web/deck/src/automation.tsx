@@ -4,6 +4,7 @@ import { t } from './i18n'
 import { TileIcon } from './icon'
 import { isIconName } from '../../shared/icons'
 import { convTemp, tempUnit, unitOf } from './temp'
+import { OmniPet } from './omni-pet'
 import type { IconAssets, Notice, PushedValue, PushOptions, WeatherData, WeatherOptions } from './types'
 
 /** Re-render every `ms` so relative times ("3 min ago") stay fresh. */
@@ -388,6 +389,7 @@ export function WeatherTile(props: WeatherProps) {
 export interface ValueProps {
   cfg: PushOptions
   val?: PushedValue
+  petVal?: PushedValue
   tw: number
   th: number
   scale: number
@@ -407,10 +409,11 @@ export function ValueTile(props: ValueProps) {
   const text = v ? String(v.value) : '–'
   const unit = props.cfg.unit || (v && v.unit) || ''
   const len = (text + unit).length
-  const vs = Math.max(16, Math.min(Math.floor(th * (v && v.sub ? 0.34 : 0.42)), Math.floor((tw - pad * 2) / (Math.max(2, len) * 0.56)), 56))
+  const withPet = !!props.cfg.pet && tw >= 150 && th >= 70
+  const vs = Math.max(16, Math.min(Math.floor(th * (v && v.sub ? 0.34 : 0.42)), Math.floor((tw - pad * 2 - (withPet ? 34 : 0)) / (Math.max(2, len) * 0.56)), 56))
   const col = props.textColor || props.color || undefined
   return (
-    <div class={'pd-vl' + (stale ? ' pd-vl--stale' : '')} style={{ padding: pad + 'px' }}>
+    <div class={'pd-vl' + (stale ? ' pd-vl--stale' : '') + (withPet ? ' pd-vl--pet' : '')} style={{ padding: pad + 'px' }}>
       <span class="pd-vl__lb" style={{ color: props.color || undefined }}>
         {label}
       </span>
@@ -418,6 +421,7 @@ export function ValueTile(props: ValueProps) {
         {text}
         {unit ? <i style={{ fontSize: Math.max(10, Math.round(vs * 0.42)) + 'px' }}>{unit}</i> : null}
       </span>
+      {withPet ? <OmniPet val={props.petVal} size={Math.max(24, Math.min(40, Math.floor(th * 0.34)))} /> : null}
       {v && v.sub && th >= 80 ? <span class="pd-vl__sub">{v.sub}</span> : null}
       <span class="pd-vl__t">{v ? (stale ? t('Stale') + ' · ' : '') + relTime(v.at, now) : t('No data yet')}</span>
     </div>

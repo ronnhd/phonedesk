@@ -71,6 +71,39 @@ export function readOmniAllowance(): ProviderQuota | null {
   }
 }
 
+export type PetState = "busy" | "idle" | "sleep";
+
+/** Activity thresholds: recent request means busy, otherwise idle, otherwise asleep. */
+export function petStateFromAge(ageMs: number): PetState {
+  return ageMs <= 12_000 ? "busy" : ageMs <= 90_000 ? "idle" : "sleep";
+}
+
+export interface OmniPet {
+  state: PetState;
+  /** compact tokens used in the last 60 s, with unit */
+  rate: string;
+}
+
+/** Recent request activity, used to drive the idle/busy/sleep pet. */
+export function readOmniPet(): OmniPet | null {
+  const db = open();
+  if (!db) return null;
+  try {
+    const since = new Date(Date.now() - 60_000).toISOString();
+    const row = db.query<{ tokens: number; last: string | null }, [string]>(`
+      SELECT COALESCE(SUM(tokens_input + tokens_output), 0) AS tokens,
+             MAX(timestamp) AS last
+      FROM usage_history WHERE timestamp >= ?
+    `).get(since)!;
+    const lastMs = row.last ? Date.parse(row.last) : 0;
+    const age = lastMs ? Date.now() - lastMs : Infinity;
+    const state = petStateFromAge(age);
+    return { state, rate: compact(row.tokens) + " tok/min" };
+  } finally {
+    db.close();
+  }
+}
+
 /** Rolling 24 h spend, token volume and gateway state, all from OmniRoute's own tables. */
 export function readOmniValues(): OmniValues | null {
   const db = open();

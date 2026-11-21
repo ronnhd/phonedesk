@@ -108,7 +108,7 @@ export interface WeatherOptions {
   show?: "now" | "hourly" | "daily" | "auto";
   units?: "metric" | "imperial";
 }
-export interface PushOptions { key: string; label?: string; unit?: string }
+export interface PushOptions { key: string; label?: string; unit?: string; pet?: boolean }
 
 export type MacroStep =
   | { kind: "hotkey"; keys: string }

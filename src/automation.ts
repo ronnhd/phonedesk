@@ -51,7 +51,7 @@ export function weatherOptions(v: any, where: string): WeatherOptions | undefine
 // ---------- pushed value / notifications widgets ----------
 
 /** "value" widget: shows the latest value pushed to /api/push/<key>. */
-export interface PushOptions { key: string; label?: string; unit?: string; }
+export interface PushOptions { key: string; label?: string; unit?: string; pet?: boolean; }
 
 export function pushOptions(v: any, where: string): PushOptions {
   if (!isObj(v)) fail(`${where} must be an object with a key`);
@@ -60,6 +60,7 @@ export function pushOptions(v: any, where: string): PushOptions {
   const out: PushOptions = { key };
   if (v.label !== undefined && v.label !== "") out.label = s(v.label, `${where}.label`, 40);
   if (v.unit !== undefined && v.unit !== "") out.unit = s(v.unit, `${where}.unit`, 12);
+  if (v.pet === true) out.pet = true;
   return out;
 }
 

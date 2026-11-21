@@ -34,7 +34,7 @@ import { ToolStates, type ToolState } from "./ai/states";
 import { detectOpencode, opencodeDataFound, installPlugin, isPluginInstalled, opencodePath, pluginPath, readOpencodeSessions, uninstallPlugin } from "./ai/opencode";
 import { UpdateChecker } from "./update";
 import { grokDataFound, grokQuota, grokHookFile, grokPath, installGrokHook, isGrokHookInstalled, readGrokSessions, uninstallGrokHook } from "./ai/grok";
-import { readOmniValues } from "./ai/omniroute";
+import { readOmniPet, readOmniValues } from "./ai/omniroute";
 import { PermissionBroker, ensureHookSecret, parseHookInput, secretMatches, PERMISSION_TIMEOUT_MS } from "./permissions";
 import { classifyRisk } from "./risk";
 import { askHookCommand, hookCommand, hookConfigPath, installAskHook, installHook, isAskHookInstalled, isHookInstalled, uninstallAskHook, uninstallHook, type HookTool } from "./hooks-install";
@@ -258,6 +258,15 @@ export async function startServer(opts: StartOptions = {}) {
       console.error("omniroute", e);
     }
   };
+  const syncOmniPet = () => {
+    try {
+      const p = readOmniPet();
+      if (!p) return;
+      pushes.set("omni_pet", p.state, { sub: p.rate, ttl: 30 });
+    } catch (e) {
+      console.error("omniroute pet", e);
+    }
+  };
   const findAction = (pageId: string, itemId: string) => {
     const it = layout.pages.find((p) => p.id === pageId)?.items.find((i) => i.id === itemId);
     return it && it.kind === "button" ? it.action : undefined;
@@ -311,8 +320,11 @@ export async function startServer(opts: StartOptions = {}) {
   (rulesTimer as any).unref?.();
   const unsubHass = hass.onState?.((id, st) => rules.setHass(id, st?.state));
   syncOmni();
+  syncOmniPet();
   const omniTimer = setInterval(syncOmni, 5 * 60_000);
   omniTimer.unref?.();
+  const omniPetTimer = setInterval(syncOmniPet, 5_000);
+  omniPetTimer.unref?.();
 
   const weather = new WeatherService({ fetch: opts.weatherFetch, hass: () => hass });
   async function weatherItems(): Promise<Record<string, unknown>> {
@@ -1264,6 +1276,7 @@ export async function startServer(opts: StartOptions = {}) {
       if (aiSessionsTimer) clearInterval(aiSessionsTimer);
       if (aiQuotaTimer) clearInterval(aiQuotaTimer);
       clearInterval(omniTimer);
+      clearInterval(omniPetTimer);
       broker.clear();
       questions.clear();
       stopStats();

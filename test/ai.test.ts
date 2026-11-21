@@ -7,6 +7,7 @@ import { fetchCodexQuota, parseLatestRateLimits, toQuotaWindows } from "../src/a
 import { fetchAntigravityQuota, parseAgyUsage } from "../src/ai/antigravity";
 import { claudeNeedsInput, codexNeedsInput, decodeProjectDir, listSessions, projectName, sessionState, summarizeClaudeTail, summarizeCodex } from "../src/ai/sessions";
 import { AiHub } from "../src/ai";
+import { petStateFromAge } from "../src/ai/omniroute";
 import { windowLabel } from "../src/ai/types";
 
 const tmp = (p: string) => mkdtempSync(join(tmpdir(), p));
@@ -321,5 +322,14 @@ describe("AiHub", () => {
     const snap = hub.snapshot();
     expect(snap.providers.map((p) => p.id)).toEqual(["omni", "claude", "codex", "antigravity", "opencode", "grok"]);
     expect(snap.providers[3]!.error).toContain("agy down");
+  });
+
+  test("omni pet activity thresholds", () => {
+    expect(petStateFromAge(0)).toBe("busy");
+    expect(petStateFromAge(12_000)).toBe("busy");
+    expect(petStateFromAge(12_001)).toBe("idle");
+    expect(petStateFromAge(90_000)).toBe("idle");
+    expect(petStateFromAge(90_001)).toBe("sleep");
+    expect(petStateFromAge(Infinity)).toBe("sleep");
   });
 });

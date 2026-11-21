@@ -427,6 +427,7 @@ function Tile(props: {
   hassConnected?: boolean
   wxData?: WeatherData
   pushed?: PushedValue
+  pushedAll?: Record<string, PushedValue>
   notes?: Notice[]
   busy?: boolean
   entPend?: number
@@ -568,6 +569,7 @@ function Tile(props: {
           push={item.push}
           wxData={props.wxData}
           pushed={props.pushed}
+          pushedAll={props.pushedAll}
           notes={props.notes}
           hassEnt={props.hassEnt}
           hassForceOn={props.hassForceOn}
@@ -1821,6 +1823,7 @@ export function Deck(props: DeckProps) {
                             hassConnected={hass ? hass.connected : true}
                             wxData={st.weather ? st.weather[it.id] : undefined}
                             pushed={it.push && st.pushed ? st.pushed[it.push.key] : undefined}
+                            pushedAll={st.pushed}
                             notes={st.notes}
                             entPend={it.entity ? pend[it.entity.id] : undefined}
                             onEntity={(pg, itm) => setSheet({ page: pg, item: itm })}

@@ -53,6 +53,7 @@ export interface PushOptions {
   key: string
   label?: string
   unit?: string
+  pet?: boolean
 }
 export interface WeatherData {
   now: { temp: number; condition?: string | number; text?: string; high?: number; low?: number; humidity?: number; wind?: number }

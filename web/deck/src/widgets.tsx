@@ -93,6 +93,7 @@ export interface WidgetProps {
   push?: PushOptions
   wxData?: WeatherData
   pushed?: PushedValue
+  pushedAll?: Record<string, PushedValue>
   notes?: Notice[]
   hassEnt?: HassEntity
   hassForceOn?: boolean
@@ -112,7 +113,7 @@ export function Widget(props: WidgetProps) {
   if (props.kind === 'clock') return <ClockWidget tw={props.tw} th={props.th} scale={props.scale} showLabel={props.showLabel} textColor={props.textColor} color={props.color} opts={props.clock} caption={LABEL.clock} />
   if (props.kind === 'entity' && props.entity) return <EntityTile id={props.entity.id} cfg={props.entity} ent={props.hassEnt} forceOn={props.hassForceOn} pend={props.entPend} onStep={props.onStep} onLight={props.onLight} connected={props.hassConnected !== false} tw={props.tw} th={props.th} scale={props.scale} showLabel={props.showLabel} color={props.color} textColor={props.textColor} assets={props.assets} />
   if (props.kind === 'weather') return <WeatherTile opts={props.weather} data={props.wxData} tw={props.tw} th={props.th} cw={props.cw} ch={props.ch} scale={props.scale} showLabel={props.showLabel} textColor={props.textColor} assets={props.assets} />
-  if (props.kind === 'value' && props.push) return <ValueTile cfg={props.push} val={props.pushed} tw={props.tw} th={props.th} scale={props.scale} showLabel={props.showLabel} color={props.color} textColor={props.textColor} />
+  if (props.kind === 'value' && props.push) return <ValueTile cfg={props.push} val={props.pushed} petVal={props.pushedAll?.['omni_pet']} tw={props.tw} th={props.th} scale={props.scale} showLabel={props.showLabel} color={props.color} textColor={props.textColor} />
   if (props.kind === 'polymarket') return <PolyLiveTile cfg={props.push} val={props.pushed} tw={props.tw} th={props.th} color={props.color} textColor={props.textColor} showLabel={props.showLabel} />
   if (props.kind === 'notifications') return <NotificationsTile notes={props.notes || []} tw={props.tw} th={props.th} showLabel={props.showLabel} textColor={props.textColor} />
   if (props.kind === 'nowplaying') return <NowPlayingTile media={props.media} last={props.last} stats={props.stats} tw={props.tw} th={props.th} scale={props.scale} showLabel={props.showLabel} textColor={props.textColor} onMedia={props.onMedia} onVolume={props.onVolume} />
