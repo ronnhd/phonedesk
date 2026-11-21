@@ -423,8 +423,8 @@ export function ValueTile(props: ValueProps) {
         {unit ? <i style={{ fontSize: Math.max(10, Math.round(vs * 0.42)) + 'px' }}>{unit}</i> : null}
       </span>
       {withPet ? <OmniPet val={props.petVal} size={petSize} /> : null}
-      {v && v.sub && th >= 80 ? <span class="pd-vl__sub">{v.sub}</span> : null}
-      <span class="pd-vl__t">{v ? (stale ? t('Stale') + ' · ' : '') + relTime(v.at, now) : t('No data yet')}</span>
+      {v && v.sub && th >= 80 ? <span class="pd-vl__sub" style={withPet ? { maxWidth: 'calc(100% - ' + (petSize + 12) + 'px)' } : undefined}>{v.sub}</span> : null}
+      {withPet ? null : <span class="pd-vl__t">{v ? (stale ? t('Stale') + ' · ' : '') + relTime(v.at, now) : t('No data yet')}</span>}
     </div>
   )
 }

@@ -3215,6 +3215,7 @@
 .pd-wx__src { display: block; margin-top: 6px; font-size: 9px; color: var(--pd-muted); opacity: 0.7; text-align: left; }
 .pd-vl { justify-content: center; }
 .pd-vl--pet { position: relative; }
+.pd-vl--pet .pd-vl__sub { font-size: 11px; }
 .pd-vl--stale { opacity: 0.5; }
 .pd-vl__lb { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--pd-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pd-vl__v { display: block; margin-top: 4px; font-weight: 600; line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; white-space: nowrap; }
